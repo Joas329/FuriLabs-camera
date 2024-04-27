@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<CameraDeviceRangeWrapper>("org.droidian.CameraDeviceRangeWrapper", 1, 0, "CameraDeviceRangeWrapper");
 
     ZXingQt::registerQmlAndMetaTypes();
-
+    
     engine.load(url);
 
     return app.exec();
