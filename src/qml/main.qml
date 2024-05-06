@@ -34,8 +34,6 @@ ApplicationWindow {
     property var swipeDirection: 0 // 0 = swiped left, 1 = swiped right, 2 = clicked
     property var next_state_left: "Empty"
     property var next_state_right: "VideoCapture"
-    
-
 
     Settings {
         id: settings
