@@ -35,6 +35,10 @@ Item {
         tryHarder: false
         tryDownscale: true
 
+        tryRotate: false
+        tryHarder: false
+        tryDownscale: true
+
         onNewResult: {
             points = result.isValid
                     ? [result.position.topLeft, result.position.topRight, result.position.bottomRight, result.position.bottomLeft]
