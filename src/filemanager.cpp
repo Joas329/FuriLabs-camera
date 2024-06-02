@@ -13,12 +13,85 @@
 #include <QStandardPaths>
 #include <QFile>
 #include <QProcess>
+#include <QDBusInterface>
+#include <QDBusReply>
 #include <QDateTime>
 #include <QDebug>
 #include <iomanip>
 
 FileManager::FileManager(QObject *parent) : QObject(parent) {
+
+    struct geoClueProperties {
+        float Latitude;
+        float Longitude;
+        float Accuracy;
+        float Altitude;
+        float Speed;
+        float Heading;
+        QString Description;
+
+        struct Timestamp {
+            int time1, time2;
+        };
+    };
+
+    const QString service = "org.freedesktop.GeoClue2";
+    const QString path = "/org/freedesktop/GeoClue2/Manager";
+    const QString interface = "org.freedesktop.GeoClue2.Manager";
+    const QString property = "Locked";
+
+    QDBusConnection dbusConnection = QDBusConnection::systemBus();
+
+    QDBusInterface dbusInterface(service, path, interface, dbusConnection);
+    if (!dbusInterface.isValid()) {
+        qWarning() << "\n \n \nD-Bus interface is not valid!";
+    } else {
+        qDebug() << "\n \n \nConnected to DBus service:" << service;
+    }
+  
+    QDBusReply<QDBusObjectPath> reply = dbusInterface.call("GetClient");
+    if (!reply.isValid()) {
+        qWarning() << "\n \n \nDBus call failed: " << reply.error().message();
+    } else {
+        qDebug() << "\n \n \nGot the geoclue client created.";
+    }
+
+    QString objPath = reply.value().path();
+
+    QDBusInterface clientInterface(service,objPath, "org.freedesktop.GeoClue2.Client", dbusConnection);
+    if (!clientInterface.isValid()) {
+        qWarning() << "\n \n \nD-Bus interface is not valid!";
+    } else {
+        qDebug() << "\n \n \nConnected to client DBus service: " << service;
+    }
+
+    QDBusReply<void> startReply = clientInterface.call("Start");
+    if (!reply.isValid()) {
+        qWarning() << "DBus call failed: " << startReply.error().message();
+    } else {
+        qDebug() << "\n \n \nStart Call from " << service;
+    }
+
+
+
+    QDBusInterface propertyInterface(service, objPath, "org.freedesktop.DBus.Properties", dbusConnection);
+    if (!propertyInterface.isValid()) {
+        qWarning() << "\n \n \nD-Bus interface is not valid!";
+    } else {
+        qDebug() << "\n \n \nConnected to client DBus service: " << objPath;
+    }
+
+    QDBusReply<void> setPropertyReply = propertyInterface.call("Set", "Properties", "DesktopId", "CameraApp");
+    if (!setPropertyReply.isValid()) {
+        qWarning() << "\n \n \nDBus call failed: " << setPropertyReply.error().message();
+    } else {
+        qDebug() << "\n \n \nSet Desktop Id to CameraApp.";
+    }
 }
+
+// void handleLocationUpdated(const QDBusMessage &message) {
+//     qDebug() << "Location updated signal received:" << message.arguments();
+// }
 
 // ***************** File Management *****************
 
@@ -77,6 +150,8 @@ bool FileManager::deleteImage(const QString &fileUrl) {
 // ***************** Picture Metada *****************
 
 easyexif::EXIFInfo FileManager::getPictureMetaData(const QString &fileUrl){
+
+    getCurrentLocation();
 
     QString path = fileUrl;
     int colonIndex = path.indexOf(':');
@@ -420,4 +495,39 @@ QString FileManager::getCodecId(const QString &fileUrl) {
         }
     }
     return QString("Codec ID: Not found");
+}
+
+// ***************** GPS Metadata *****************
+
+void FileManager::getCurrentLocation() {
+
+
+    // const QString service = "org.freedesktop.GeoClue2";
+    // const QString path = "/org/freedesktop/GeoClue2/Manager";
+    // const QString interface = "org.freedesktop.GeoClue2.Manager";
+    // const QString property = "Locked";
+
+    // QDBusInterface dbusInterface(service, path, "org.freedesktop.GeoClue2.Manager", QDBusConnection::sessionBus());
+    // if (!dbusInterface.isValid()) {
+    //     qWarning() << "D-Bus interface is not valid!";
+    //     //return false;
+    // }
+
+    // double new_lat, new_lon;
+
+    // qDebug() << "Connected to DBus service: " << service;
+
+    //Location interface appears if you have an object of the client;
+
+
+
+
+    // QDBusReply<QVariant> new_lat = dbusInterface.call("Latitude", interface, property);
+    // if (reply.isValid()) {
+    //     bool isLocked = reply.value().toBool();
+    //     //return isLocked;
+    // } else {
+    //     qWarning() << "Failed to get property:" << reply.error().message();
+    //     //return false;
+    // }
 }

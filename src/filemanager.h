@@ -46,6 +46,8 @@ public:
     Q_INVOKABLE QString getWritingApplication(const QString &fileUrl);
     Q_INVOKABLE QString getDocumentType(const QString &fileUrl);
     Q_INVOKABLE QString getCodecId(const QString &fileUrl);
+// ***************** GPS Metadata *****************
+    Q_INVOKABLE void getCurrentLocation();
 };
 
 #endif // FILEMANAGER_H
