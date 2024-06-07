@@ -37,6 +37,7 @@ ApplicationWindow {
 
     Settings {
         id: settings
+        objectName: "settingsObject"
         property int cameraId: 0
         property int aspWide: 0
         property var flash: "flashAuto"
@@ -53,6 +54,7 @@ ApplicationWindow {
 
         property int soundOn: 1
         property var hideTimerInfo: 0
+        property int gpsOn: 0
     }
 
     Settings {
