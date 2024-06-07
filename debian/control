@@ -14,6 +14,7 @@ Build-Depends: cmake,
                libgstreamer1.0-dev,
                pkgconf,
                libzxing-dev
+               libexiv2-dev
 Standards-Version: 4.5.1
 
 Package: droidian-camera
