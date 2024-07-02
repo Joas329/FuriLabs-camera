@@ -520,6 +520,7 @@ ApplicationWindow {
                         focusPointRect.visible = true
                         focusPointRect.x = mouse.x - (focusPointRect.width / 2)
                         focusPointRect.y = mouse.y - (focusPointRect.height / 2)
+                        window.blurView = 0
                         configBar.opened = 0
                         configBar.aspectRatioOpened = 0
                         visTm.start()
@@ -549,33 +550,6 @@ ApplicationWindow {
             id: btnContainer
             spacing: 25
             anchors.centerIn: parent
-
-            Button {
-                id: camSwitchBtn
-
-                height: width
-                Layout.alignment: Qt.AlignHCenter
-                icon.name: "camera-switch-symbolic"
-                icon.height: 40
-                icon.width: 40
-                icon.color: "white"
-                visible: camera.position !== Camera.UnspecifiedPosition && !window.videoCaptured
-
-                background: Rectangle {
-                    anchors.fill: parent
-                    color: "transparent"
-                }
-
-                onClicked: {
-                    if (camera.position === Camera.BackFace) {
-                        drawer.close()
-                        camera.position = Camera.FrontFace;
-                    } else if (camera.position === Camera.FrontFace) {
-                        drawer.close()
-                        camera.position = Camera.BackFace;
-                    }
-                }
-            }
 
             Button {
                 id: cameraSelectButton
@@ -879,23 +853,24 @@ ApplicationWindow {
         visible: !mediaView.visible
 
         Rectangle {
-            id: menuBtnFrame
+            id: rotateBtnFrame
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             height: 60
             width: 60
-            color: "transparent"
+            radius: 5
+            color: "#333333"
             anchors.rightMargin: 50
             anchors.bottomMargin: 5
             visible: !window.videoCaptured
 
             Button {
-                id: menuBtn
+                id: rotateCamera
                 anchors.fill: parent
-                icon.name: "open-menu-symbolic"
+                icon.source: "icons/rotateCamera.svg"
                 icon.color: "white"
-                icon.width: 35
-                icon.height: 35
+                icon.width: 45
+                icon.height: 40
                 enabled: !window.videoCaptured
                 visible: drawer.position == 0.0 && optionContainer.state == "closed"
 
@@ -904,9 +879,12 @@ ApplicationWindow {
                 }
 
                 onClicked: {
-                    if (!mediaView.visible) {
-                        window.blurView = 1
-                        drawer.open()
+                    if (camera.position === Camera.BackFace) {
+                        drawer.close()
+                        camera.position = Camera.FrontFace;
+                    } else if (camera.position === Camera.FrontFace) {
+                        drawer.close()
+                        camera.position = Camera.BackFace;
                     }
                 }
             }
